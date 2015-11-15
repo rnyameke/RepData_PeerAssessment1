@@ -144,7 +144,7 @@ sum(is.na(data$steps))</code></pre>
      #variable for holding intervals
      interval &lt;- matrix()
      
-     #filling in the missing NAs
+     #filling in the missing NAs with the mean for that interval across all days
      for (i in 1:length(new_data$steps)) {
           if (is.na(new_data$steps[i])) {
                   interval[i] &lt;- new_data$interval[i]
@@ -177,6 +177,8 @@ mean(new_steps_per_day$steps)</code></pre>
 <pre class="r"><code>#median steps per day
 median(new_steps_per_day$steps)</code></pre>
 <pre><code>## [1] 10766.19</code></pre>
+<pre class="r"><code>#mean did not change, but median did. There was an increase in the total daily
+#number of steps</code></pre>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>

@@ -118,7 +118,7 @@ sum(is.na(data$steps))
      #variable for holding intervals
      interval <- matrix()
      
-     #filling in the missing NAs
+     #filling in the missing NAs with the mean for that interval across all days
      for (i in 1:length(new_data$steps)) {
           if (is.na(new_data$steps[i])) {
                   interval[i] <- new_data$interval[i]
@@ -164,6 +164,11 @@ median(new_steps_per_day$steps)
 
 ```
 ## [1] 10766.19
+```
+
+```r
+#mean did not change, but median did. There was an increase in the total daily
+#number of steps
 ```
 
 
