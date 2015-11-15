@@ -12,6 +12,7 @@ keep_md: true
 data <- read.csv("activity.csv")
 library(dplyr)
 library(ggplot2)
+library(chron)
 
 #putting date in correct format
 data$date <- as.POSIXct(data$date)
@@ -110,3 +111,30 @@ median(new_steps_per_day$steps)
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+````{r}
+#checking if days are weekends or weekdays
+for (i in 1:length(new_data$date)){
+     if (is.weekend(new_data$date[i])){
+          new_data$day.type[i] <- "weekend"
+     }
+     
+     else new_data$day.type[i] <- "weekday"
+}
+
+#making the day.type column a factor
+new_data$day.type <- as.factor(new_data$day.type)
+
+#time series plot
+     #group table by interval
+     new_data_group_int <- group_by(new_data, interval, day.type)
+     
+     #mean of steps taken per interval, across days
+     new_data_mean_int <- summarize(new_data_group_int, mean(steps, na.rm=T))
+          #rename column
+          names(new_data_mean_int)[3] <- "steps"
+          
+     #time series plot
+     ggplot(data = new_data_mean_int, aes(x = interval, y = steps, , color = day.type)) +
+          geom_line(aes(group = 1)) + facet_wrap(~day.type)
+
+````
