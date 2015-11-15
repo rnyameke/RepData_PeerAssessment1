@@ -138,6 +138,6 @@ new_data$day.type <- as.factor(new_data$day.type)
           
      #time series plot
      ggplot(data = new_data_mean_int, aes(x = interval, y = steps, , color = day.type)) +
-          geom_line(aes(group = 1)) + facet_wrap(~day.type)
+          geom_line(aes(group = 1)) + facet_wrap(~day.type, ncol = 1)
 
 ````
