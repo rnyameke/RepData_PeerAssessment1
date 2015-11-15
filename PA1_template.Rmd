@@ -1,25 +1,112 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Rose Nyameke"
+date: "November 14, 2015"
+output: html_document
+keep_md: true
 ---
 
 
 ## Loading and preprocessing the data
+```{r, echo = FALSE}
+data <- read.csv("activity.csv")
+library(dplyr)
+library(ggplot2)
 
+#putting date in correct format
+data$date <- as.POSIXct(data$date)
 
+#creating a table without the NAs
+data_without_na <- na.omit(data)
+
+#creating a .tbl with dplyr package for grouping by date
+data_tbl_without_na <- tbl_df(data_without_na)
+data_tbl_without_na <- group_by(data_tbl_without_na, date)
+
+````
 
 ## What is mean total number of steps taken per day?
+```{r}
+#total number of steps per day
+steps_per_day <- summarize(data_tbl_without_na, sum(steps))
+     #renaming column
+     names(steps_per_day)[2] <- "steps"
 
+#histogram of steps per day
+ggplot(data = steps_per_day, aes(x = steps)) + geom_histogram()
 
+#mean of steps taken per day
+mean(steps_per_day$steps)
+
+#median steps per day
+median(steps_per_day$steps)
+````
 
 ## What is the average daily activity pattern?
+````{r}
+#group table by interval
+data_group_int <- group_by(data_tbl_without_na, interval)
 
+#mean of steps taken per interval, across days
+data_mean_int <- summarize(data_group_int, mean(steps, na.rm=T))
+     #rename column
+     names(data_mean_int)[2] <- "steps"
+     
+#time series plot
+ggplot(data = data_mean_int, aes(x = interval, y = steps)) + geom_line(aes(group = 1))
 
+#5 minute interval with max number of steps
+data_mean_int[which(data_mean_int$steps == max(data_mean_int$steps)),1]
+
+````
 
 ## Imputing missing values
+````{r}
+#number of NAs
+sum(is.na(data$steps))
+     
+#using mean per interval for replacing dates
+     #creating a new data set
+     new_data <- data
+     
+     #variable for holding intervals
+     interval <- matrix()
+     
+     #filling in the missing NAs
+     for (i in 1:length(new_data$steps)) {
+          if (is.na(new_data$steps[i])) {
+                  interval[i] <- new_data$interval[i]
+                  int.value <- interval[i]
+                  new_data$steps[i] <- subset(data_mean_int, interval == int.value)[1,2]
+          }
+     }
+     
+     #cleaning the new table
+     new_data$steps <- as.numeric(new_data$steps)
+     
+#creating a data_tbl for the new data
+new_data_tbl <- tbl_df(new_data)
 
+#group by date
+new_data_tbl_date <- group_by(new_data_tbl, date)
+
+#total number of steps per day
+new_steps_per_day <- summarize(new_data_tbl_date, sum(steps))
+
+#renaming column
+names(new_steps_per_day)[2] <- "steps"
+
+#histogram of steps per day
+ggplot(data = new_steps_per_day, aes(x = steps)) + geom_histogram()
+
+#mean of steps taken per day
+mean(new_steps_per_day$steps)
+
+#median steps per day
+median(new_steps_per_day$steps)
+
+
+````
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
